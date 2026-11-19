@@ -1,10 +1,10 @@
 # AftaClass backend
 
-Run the backend from this directory with `npm start`, then open **http://127.0.0.1:3002**. AftaClass uses port 3002 by default to avoid conflicts with other local apps on ports 3000 and 3001. Express serves the frontend and API from the same origin. Do not open `frontend/index.html` directly from the file system.
+Run the API from this directory with `npm start`. AftaClass uses port 3002 by default to avoid conflicts with other local apps on ports 3000 and 3001. Check the API at **http://127.0.0.1:3002/api/lessons**. The Vue frontend is maintained in the separate [school_project_frontend repository](https://github.com/praise-cloud/school_project_frontend).
 
-If you prefer VS Code Live Server, open the `frontend` folder in the workspace and start Live Server on its `index.html`. The frontend calls the backend API on port 3002 when served from Live Server ports 5500 or 5501. If Live Server shows a directory listing or another project, use the Express URL above instead.
+For local frontend development, clone the frontend repository separately and use VS Code Live Server on its `index.html` with port 5500 or 5501. The frontend calls the local backend at port 3002 from these origins.
 
-To use another backend port, set the `PORT` environment variable when starting the server and update the API URL in `frontend/index.js` to match.
+To use another backend port, set the `PORT` environment variable when starting the server and update the local API URL in the frontend repository.
 
 ## Render deployment
 
@@ -14,7 +14,7 @@ Add `MONGODB_URI` as a Render environment variable using your MongoDB Atlas conn
 
 ## MongoDB setup
 
-Copy `.env.example` to `.env` and replace `MONGODB_URI` with the connection string from your MongoDB deployment. The `.env` file is loaded by the backend and is ignored by Git; do not commit your connection string. The backend connects to the `AftaClass` database and reads lesson records from the `lessons` collection on startup. The database name is selected by the backend, so it does not need to be included in the URI.
+Create a `.env` file in the backend directory and set `MONGODB_URI` to your MongoDB Atlas connection string. The `.env` file is loaded by the backend and is ignored by Git; do not commit your connection string. On Render, set the URI in the service's environment settings. The backend connects to the `AftaClass` database and reads lesson records from the `lessons` collection on startup. The database name is selected by the backend, so it does not need to be included in the URI.
 
 `lessons.json` contains 10 lesson records, including a `location` and an `imageUrl` for each lesson, as a JSON array ready for MongoDB import. Replace the existing documents in `AftaClass.lessons` before importing updated records; importing again without replacing them will add duplicates. `mongoimport` does not load `.env` automatically, so set the URI in the terminal first. From the `backend` directory, run:
 
