@@ -6,6 +6,12 @@ If you prefer VS Code Live Server, open the `frontend` folder in the workspace a
 
 To use another backend port, set the `PORT` environment variable when starting the server and update the API URL in `frontend/index.js` to match.
 
+## Render deployment
+
+Deploy this backend as a **Web Service**, not a Static Site. In Render, set the root directory to `backend` (relative to the repository, without a leading slash), the build command to `npm ci`, and the start command to `npm start`. Do not set a publish directory; Web Services run the Node.js process rather than publishing a folder of static files.
+
+Add `MONGODB_URI` as a Render environment variable using your MongoDB Atlas connection string. Render supplies `PORT` automatically, and the server listens on that port. After deployment, the lessons endpoint is available at `https://<your-service>.onrender.com/api/lessons`.
+
 ## MongoDB setup
 
 Copy `.env.example` to `.env` and replace `MONGODB_URI` with the connection string from your MongoDB deployment. The `.env` file is loaded by the backend and is ignored by Git; do not commit your connection string. The backend connects to the `AftaClass` database and reads lesson records from the `lessons` collection on startup. The database name is selected by the backend, so it does not need to be included in the URI.
