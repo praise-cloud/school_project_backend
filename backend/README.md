@@ -10,7 +10,7 @@ To use another backend port, set the `PORT` environment variable when starting t
 
 Copy `.env.example` to `.env` and replace `MONGODB_URI` with the connection string from your MongoDB deployment. The `.env` file is loaded by the backend and is ignored by Git; do not commit your connection string. The backend connects to the `AftaClass` database and reads lesson records from the `lessons` collection on startup. The database name is selected by the backend, so it does not need to be included in the URI.
 
-`lessons.json` contains the lesson records, including an `imageUrl` for each lesson, as a JSON array ready for MongoDB import. To update existing records with new fields, replace the existing documents in `AftaClass.lessons` before importing; importing again without replacing them will add duplicates. `mongoimport` does not load `.env` automatically, so set the URI in the terminal first. From the `backend` directory, run:
+`lessons.json` contains the lesson records, including a `location` and an `imageUrl` for each lesson, as a JSON array ready for MongoDB import. Replace the existing documents in `AftaClass.lessons` before importing updated records; importing again without replacing them will add duplicates. `mongoimport` does not load `.env` automatically, so set the URI in the terminal first. From the `backend` directory, run:
 
 ```sh
 export MONGODB_URI="your MongoDB connection string"
