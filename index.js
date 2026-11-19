@@ -167,8 +167,6 @@ app.use('/api', (req, res) => {
   res.status(404).json({ error: 'API endpoint not found.' })
 })
 
-app.use(express.static(path.join(__dirname, '..', 'frontend')))
-
 app.use((error, req, res, next) => {
   console.error('API request failed:', error.message)
 
@@ -184,7 +182,7 @@ function getLessonsCollection(req, res) {
 
   if (!collection) {
     res.status(503).json({
-      error: 'The lesson database is not connected. Check MONGODB_URI and restart the backend.'
+      error: 'The lesson database is not connected. Set MONGODB_URI in the root .env file or Render environment.'
     })
     return null
   }
@@ -202,7 +200,7 @@ async function getCartItems(collection, cartId) {
 
 async function startServer() {
   if (!process.env.MONGODB_URI) {
-    throw new Error('MONGODB_URI is missing. Add your connection string to backend/.env.')
+    throw new Error('MONGODB_URI is missing. Add your connection string to the repository root .env file.')
   }
 
   const client = new MongoClient(process.env.MONGODB_URI)

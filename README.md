@@ -1,6 +1,6 @@
 # AftaClass Backend
 
-This repository contains the Node.js and Express REST API for AftaClass. It reads lesson data from MongoDB Atlas and updates available seats when a cart is checked out.
+This repository contains the Node.js and Express REST API for AftaClass. It reads lesson data from MongoDB Atlas and updates available seats when a cart is checked out. Backend application files, `package.json`, and `package-lock.json` are at the repository root.
 
 The Vue frontend is maintained separately at [praise-cloud/school_project_frontend](https://github.com/praise-cloud/school_project_frontend) and is published with GitHub Pages at <https://praise-cloud.github.io/school_project_frontend/>. The frontend calls this backend at <https://school-project-backend-xlih.onrender.com>.
 
@@ -10,13 +10,13 @@ The Vue frontend is maintained separately at [praise-cloud/school_project_fronte
 Vue frontend (GitHub Pages) ── fetch / REST API ──> Express (Render) ── MongoDB driver ──> MongoDB Atlas
 ```
 
-The `AftaClass.lessons` collection stores the lessons and their remaining seats. The ten initial lesson records are in [`backend/lessons.json`](backend/lessons.json). Cart contents are kept in server memory, so a backend restart clears active carts. Checkout subtracts requested quantities from lesson availability; this version does not save orders as documents.
+The `AftaClass.lessons` collection stores the lessons and their remaining seats. The ten initial lesson records are in [`lessons.json`](lessons.json). Cart contents are kept in server memory, so a backend restart clears active carts. Checkout subtracts requested quantities from lesson availability; this version does not save orders as documents.
 
 ## Run locally
 
 Requirements: Node.js, npm, and a MongoDB Atlas connection string.
 
-1. Create `backend/.env` with:
+1. Create a root `.env` file with:
 
    ```env
    MONGODB_URI=your_mongodb_atlas_connection_string
@@ -25,18 +25,26 @@ Requirements: Node.js, npm, and a MongoDB Atlas connection string.
 2. Install dependencies and start the backend:
 
    ```powershell
-   cd backend
    npm ci
    npm run dev
    ```
 
 3. Check `http://127.0.0.1:3002/api/lessons` for the lesson JSON. To run the separate frontend locally, use VS Code Live Server on port 5500 or 5501.
 
-Never commit `.env` or share its connection string. See [`backend/README.md`](backend/README.md) for seed-data import and API details.
+Never commit `.env` or share its connection string.
+
+## MongoDB lesson data
+
+The backend expects the ten lesson documents from `lessons.json` in `AftaClass.lessons`. Replace the existing lesson records before importing so the records are not duplicated. `mongoimport` does not read `.env` automatically; in PowerShell, set the variable for the command:
+
+```powershell
+$env:MONGODB_URI = "your_mongodb_atlas_connection_string"
+mongoimport --uri $env:MONGODB_URI --db AftaClass --collection lessons --file lessons.json --jsonArray
+```
 
 ## Render deployment
 
-Deploy this repository's backend folder as a Render **Web Service** with root directory `backend`, build command `npm ci`, and start command `npm start`. Set `MONGODB_URI` in Render's environment settings; Render provides `PORT`.
+Deploy this repository as a Render **Web Service**. Leave **Root Directory** blank so Render uses the repository root. Set the build command to `npm ci`, the start command to `npm start`, and `MONGODB_URI` in the Render environment settings. Render supplies `PORT`.
 
 ## API
 
