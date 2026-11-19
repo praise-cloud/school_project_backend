@@ -12,14 +12,15 @@ app.use((req, res, next) => {
     'http://localhost:5500',
     'http://127.0.0.1:5500',
     'http://localhost:5501',
-    'http://127.0.0.1:5501'
+    'http://127.0.0.1:5501',
+    'https://praise-cloud.github.io'
   ])
   const origin = req.get('Origin')
 
   if (origin && allowedOrigins.has(origin)) {
     res.set('Access-Control-Allow-Origin', origin)
     res.set('Vary', 'Origin')
-    res.set('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
+    res.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
     res.set('Access-Control-Allow-Headers', 'Content-Type')
   }
 
@@ -59,12 +60,14 @@ app.post('/api/cart/:cartId/items', async (req, res) => {
     return res.status(404).json({ error: 'Lesson not found.' })
   }
 
-  if (lesson.availableSeats < 1) {
+  const cart = carts.get(req.params.cartId) || new Map()
+  const quantityInCart = cart.get(lesson.id) || 0
+
+  if (lesson.availableSeats <= quantityInCart) {
     return res.status(409).json({ error: 'This lesson is fully booked.' })
   }
 
-  const cart = carts.get(req.params.cartId) || new Set()
-  cart.add(lesson.id)
+  cart.set(lesson.id, quantityInCart + 1)
   carts.set(req.params.cartId, cart)
 
   res.status(201).json({ items: await getCartItems(collection, req.params.cartId) })
@@ -78,7 +81,14 @@ app.delete('/api/cart/:cartId/items/:lessonId', async (req, res) => {
   const lessonId = Number(req.params.lessonId)
 
   if (cart) {
-    cart.delete(lessonId)
+    const quantityInCart = cart.get(lessonId) || 0
+
+    if (quantityInCart > 1) {
+      cart.set(lessonId, quantityInCart - 1)
+    } else {
+      cart.delete(lessonId)
+    }
+
     if (cart.size === 0) carts.delete(req.params.cartId)
   }
 
@@ -103,12 +113,16 @@ app.post('/api/checkout/:cartId', async (req, res) => {
   }
 
   const lessons = await collection.find({}).toArray()
-  const selectedLessons = lessons.filter((lesson) => cart.has(lesson.id))
-  const unavailableLesson = selectedLessons.find((lesson) => lesson.availableSeats < 1)
+  const selectedLessons = lessons
+    .filter((lesson) => cart.has(lesson.id))
+    .map((lesson) => ({ ...lesson, quantity: cart.get(lesson.id) }))
+  const unavailableLesson = selectedLessons.find(
+    (lesson) => lesson.availableSeats < lesson.quantity
+  )
 
   if (unavailableLesson) {
     return res.status(409).json({
-      error: `${unavailableLesson.title} no longer has any seats available. Remove it from your cart to continue.`
+      error: `There are not enough seats left for ${unavailableLesson.title}. Remove some seats from your cart to continue.`
     })
   }
 
@@ -116,24 +130,24 @@ app.post('/api/checkout/:cartId', async (req, res) => {
 
   for (const lesson of selectedLessons) {
     const result = await collection.updateOne(
-      { id: lesson.id, availableSeats: { $gt: 0 } },
-      { $inc: { availableSeats: -1 } }
+      { id: lesson.id, availableSeats: { $gte: lesson.quantity } },
+      { $inc: { availableSeats: -lesson.quantity } }
     )
 
     if (!result.matchedCount) {
       for (const updatedLesson of updatedLessons) {
         await collection.updateOne(
           { id: updatedLesson.id },
-          { $inc: { availableSeats: 1 } }
+          { $inc: { availableSeats: updatedLesson.quantity } }
         )
       }
 
       return res.status(409).json({
-        error: `${lesson.title} no longer has any seats available. Remove it from your cart to continue.`
+        error: `There are not enough seats left for ${lesson.title}. Remove some seats from your cart to continue.`
       })
     }
 
-    lesson.availableSeats -= 1
+    lesson.availableSeats -= lesson.quantity
     updatedLessons.push(lesson)
   }
 
@@ -179,9 +193,11 @@ function getLessonsCollection(req, res) {
 }
 
 async function getCartItems(collection, cartId) {
-  const cart = carts.get(cartId) || new Set()
+  const cart = carts.get(cartId) || new Map()
   const lessons = await collection.find({}).toArray()
-  return lessons.filter((lesson) => cart.has(lesson.id))
+  return lessons
+    .filter((lesson) => cart.has(lesson.id))
+    .map((lesson) => ({ ...lesson, quantity: cart.get(lesson.id) }))
 }
 
 async function startServer() {

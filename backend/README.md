@@ -16,7 +16,7 @@ Add `MONGODB_URI` as a Render environment variable using your MongoDB Atlas conn
 
 Copy `.env.example` to `.env` and replace `MONGODB_URI` with the connection string from your MongoDB deployment. The `.env` file is loaded by the backend and is ignored by Git; do not commit your connection string. The backend connects to the `AftaClass` database and reads lesson records from the `lessons` collection on startup. The database name is selected by the backend, so it does not need to be included in the URI.
 
-`lessons.json` contains the lesson records, including a `location` and an `imageUrl` for each lesson, as a JSON array ready for MongoDB import. Replace the existing documents in `AftaClass.lessons` before importing updated records; importing again without replacing them will add duplicates. `mongoimport` does not load `.env` automatically, so set the URI in the terminal first. From the `backend` directory, run:
+`lessons.json` contains 10 lesson records, including a `location` and an `imageUrl` for each lesson, as a JSON array ready for MongoDB import. Replace the existing documents in `AftaClass.lessons` before importing updated records; importing again without replacing them will add duplicates. `mongoimport` does not load `.env` automatically, so set the URI in the terminal first. From the `backend` directory, run:
 
 ```sh
 export MONGODB_URI="your MongoDB connection string"
@@ -38,8 +38,8 @@ To confirm lessons are reachable, open `http://127.0.0.1:3002/api/lessons`; it s
 
 - `GET /api/lessons` — list lessons with their current `availableSeats`.
 - `GET /api/cart/:cartId` — read a cart as `{ "items": [...] }`.
-- `POST /api/cart/:cartId/items` — add one lesson using `{ "lessonId": 1 }`. A lesson can appear only once in a cart.
-- `DELETE /api/cart/:cartId/items/:lessonId` — remove a lesson from a cart.
-- `POST /api/checkout/:cartId` — book all lessons in the cart using `{ "userName": "Alex" }`. On success, returns the booked lessons with their `remainingSeats` and empties the cart.
+- `POST /api/cart/:cartId/items` — add one seat for a lesson using `{ "lessonId": 1 }`. Repeat the request to add more seats, up to the lesson's available spaces.
+- `DELETE /api/cart/:cartId/items/:lessonId` — remove one seat for that lesson from the cart.
+- `POST /api/checkout/:cartId` — book the quantities in the cart using `{ "userName": "Alex" }`. On success, returns each booked lesson's `quantity` and `remainingSeats`, then empties the cart.
 
-Carts currently live in server memory. Lesson data is read from MongoDB, and successful bookings update `availableSeats` in the `lessons` collection.
+Carts currently live in server memory. Lesson data is read from MongoDB, and successful bookings subtract the requested quantities from `availableSeats` in the `lessons` collection. Import the updated `lessons.json` into Atlas with replacement enabled to load all 10 lessons.

@@ -70,5 +70,53 @@
     "availableSeats": 5,
     "duration": "8 weeks",
     "price": 45
+  },
+  {
+    "id": 7,
+    "title": "Chemistry Lab Fundamentals",
+    "imageUrl": "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=900&auto=format&fit=crop&q=80",
+    "subject": "Science",
+    "location": "Wembley",
+    "description": "Discover chemistry through safe experiments and hands-on activities.",
+    "instructor": "Jamie Patel",
+    "availableSeats": 5,
+    "duration": "8 weeks",
+    "price": 35
+  },
+  {
+    "id": 8,
+    "title": "Creative Writing Workshop",
+    "imageUrl": "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=900&auto=format&fit=crop&q=80",
+    "subject": "English",
+    "location": "Finchley",
+    "description": "Build confidence in storytelling, poetry, and creative expression.",
+    "instructor": "Taylor Reed",
+    "availableSeats": 5,
+    "duration": "8 weeks",
+    "price": 30
+  },
+  {
+    "id": 9,
+    "title": "Web Design Fundamentals",
+    "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&auto=format&fit=crop&q=80",
+    "subject": "Computer Science",
+    "location": "Burnt Oak",
+    "description": "Create simple web pages and learn the basics of HTML and CSS.",
+    "instructor": "Sam Rivera",
+    "availableSeats": 5,
+    "duration": "8 weeks",
+    "price": 50
+  },
+  {
+    "id": 10,
+    "title": "Art and Illustration",
+    "imageUrl": "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=900&auto=format&fit=crop&q=80",
+    "subject": "Arts",
+    "location": "Golders Green",
+    "description": "Explore drawing, colour, and illustration in a welcoming studio.",
+    "instructor": "Jordan Lee",
+    "availableSeats": 5,
+    "duration": "8 weeks",
+    "price": 40
   }
 ]
