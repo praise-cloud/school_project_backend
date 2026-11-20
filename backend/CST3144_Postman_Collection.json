@@ -1,0 +1,193 @@
+{
+  "info": {
+    "_postman_id": "cst3144-aftaclass-api-collection",
+    "name": "CST3144 AftaClass API",
+    "description": "Postman collection for CST3144 Full Stack Development coursework demonstration at Middlesex University London.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://school-project-backend-1.onrender.com",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Lessons - GET All Lessons",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/lessons",
+          "host": ["{{baseUrl}}"],
+          "path": ["lessons"]
+        },
+        "description": "Returns all lessons stored in the MongoDB lessons collection as JSON (1% demo marks)."
+      }
+    },
+    {
+      "name": "2. Lessons - GET Single Lesson by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/lessons/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["lessons", "1"]
+        },
+        "description": "Returns a single lesson document by its numeric ID."
+      }
+    },
+    {
+      "name": "3. Lessons - POST Create New Lesson",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Robotics and AI Workshop\",\n  \"subject\": \"Computer Science\",\n  \"location\": \"Hendon\",\n  \"price\": 45,\n  \"availableSeats\": 5,\n  \"instructor\": \"Alex Morgan\",\n  \"duration\": \"6 weeks\",\n  \"description\": \"Hands-on robotics and basic AI concepts.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/lessons",
+          "host": ["{{baseUrl}}"],
+          "path": ["lessons"]
+        },
+        "description": "Creates and inserts a new lesson document into MongoDB."
+      }
+    },
+    {
+      "name": "4. Lessons - PUT Update Lesson Attribute (Space/Price)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"availableSeats\": 3,\n  \"price\": 28\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/lessons/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["lessons", "1"]
+        },
+        "description": "Updates any attribute in a lesson (such as available spaces) in the lessons collection (2% demo marks)."
+      }
+    },
+    {
+      "name": "5. Lessons - DELETE Lesson",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/lessons/11",
+          "host": ["{{baseUrl}}"],
+          "path": ["lessons", "11"]
+        },
+        "description": "Deletes a lesson from the database by ID."
+      }
+    },
+    {
+      "name": "6. Orders - POST Save New Order",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Sarah Jenkins\",\n  \"phone\": \"07912345678\",\n  \"email\": \"sarah@example.com\",\n  \"lessonIds\": [1, 2],\n  \"space\": 2,\n  \"totalPrice\": 60,\n  \"lessons\": [\n    {\n      \"id\": 1,\n      \"title\": \"Algebra Foundations\",\n      \"price\": 25,\n      \"quantity\": 1\n    },\n    {\n      \"id\": 2,\n      \"title\": \"Introduction to Biology\",\n      \"price\": 35,\n      \"quantity\": 1\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/orders",
+          "host": ["{{baseUrl}}"],
+          "path": ["orders"]
+        },
+        "description": "Saves a new order to the MongoDB orders collection with name, phone (numbers only), and lesson details (2% demo marks)."
+      }
+    },
+    {
+      "name": "7. Orders - GET All Orders",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/orders",
+          "host": ["{{baseUrl}}"],
+          "path": ["orders"]
+        },
+        "description": "Retrieves all saved order documents from the MongoDB orders collection."
+      }
+    },
+    {
+      "name": "8. Challenge - GET Search Lessons",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/search?q=math",
+          "host": ["{{baseUrl}}"],
+          "path": ["search"],
+          "query": [
+            {
+              "key": "q",
+              "value": "math"
+            }
+          ]
+        },
+        "description": "Challenge Task (6%): Multi-attribute search across title, subject, location, description, price, and spaces."
+      }
+    },
+    {
+      "name": "9. Challenge - GET Enrolment Number",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/enrolment/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["enrolment", "1"]
+        },
+        "description": "Challenge Task (6%): Returns the number of slots that have already been purchased for a given lesson ID."
+      }
+    },
+    {
+      "name": "10. Middleware - GET Lesson Image (Existing)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/images/algebra.png",
+          "host": ["{{baseUrl}}"],
+          "path": ["images", "algebra.png"]
+        },
+        "description": "Demonstrates the static file image middleware returning a valid lesson image (4% demo marks)."
+      }
+    },
+    {
+      "name": "11. Middleware - GET Lesson Image (Non-Existent 404)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/images/nonexistent.jpg",
+          "host": ["{{baseUrl}}"],
+          "path": ["images", "nonexistent.jpg"]
+        },
+        "description": "Demonstrates the static file middleware error handling: returns a 404 status and error message when an image does not exist (4% demo marks)."
+      }
+    }
+  ]
+}
