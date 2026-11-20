@@ -50,11 +50,17 @@ Deploy this repository as a Render **Web Service**. In Render settings, set **Ro
 
 | Method | Route | Purpose |
 | --- | --- | --- |
-| `GET` | `/api/lessons` | Return lessons and current seat counts. |
-| `GET` | `/api/cart/:cartId` | Return the cart and lesson quantities. |
-| `POST` | `/api/cart/:cartId/items` | Add one seat using `{ "lessonId": 1 }`. |
-| `DELETE` | `/api/cart/:cartId/items/:lessonId` | Remove one seat for that lesson. |
-| `POST` | `/api/checkout/:cartId` | Book cart quantities using `{ "userName": "Alex" }`. |
+| `GET` | `/api/lessons` | Return all lessons and current seat counts. |
+| `GET` | `/api/lessons/:id` | Return a single lesson by ID. |
+| `POST` | `/api/lessons` | Create and add a new lesson document. |
+| `PUT` | `/api/lessons/:id` | Update an existing lesson (price, availableSeats, title, etc.). |
+| `DELETE` | `/api/lessons/:id` | Delete a lesson by ID. |
+| `GET` | `/api/cart/:cartId` | Return the cart items and lesson quantities. |
+| `POST` | `/api/cart/:cartId/items` | Add one seat to cart using `{ "lessonId": 1 }`. |
+| `DELETE` | `/api/cart/:cartId/items/:lessonId` | Remove one seat for that lesson from cart. |
+| `POST` | `/api/checkout/:cartId` | Book cart quantities and save order to `orders` collection using `{ "name": "Alex", "phone": "0712345678", "email": "alex@example.com" }`. |
+| `GET` | `/api/orders` | Return all orders stored in the `orders` collection. |
+| `POST` | `/api/orders` | Save an order directly to the `orders` collection. |
 
 ## AI-use acknowledgment
 
