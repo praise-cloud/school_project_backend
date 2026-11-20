@@ -1,8 +1,8 @@
 # AftaClass Backend
 
-This repository contains the Node.js and Express REST API for AftaClass. It reads lesson data from MongoDB Atlas and updates available seats when a cart is checked out. Backend application files, `package.json`, and `package-lock.json` are at the repository root.
+The Node.js and Express REST API for AftaClass lives in this directory. It reads lesson data from MongoDB Atlas and updates available seats when a cart is checked out. The repository-root npm scripts install and start this backend for Render.
 
-The Vue frontend is maintained separately at [praise-cloud/school_project_frontend](https://github.com/praise-cloud/school_project_frontend) and is published with GitHub Pages at <https://praise-cloud.github.io/school_project_frontend/>. The frontend calls this backend at <https://school-project-backend-xlih.onrender.com>.
+The Vue frontend is maintained separately at [praise-cloud/school_project_frontend](https://github.com/praise-cloud/school_project_frontend) and is published with GitHub Pages at <https://praise-cloud.github.io/school_project_frontend/>. The frontend calls this backend at <https://school-project-backend-1.onrender.com>.
 
 ## Architecture
 
@@ -16,7 +16,7 @@ The `AftaClass.lessons` collection stores the lessons and their remaining seats.
 
 Requirements: Node.js, npm, and a MongoDB Atlas connection string.
 
-1. Create a root `.env` file with:
+1. Create `backend/.env` with:
 
    ```env
    MONGODB_URI=your_mongodb_atlas_connection_string
@@ -39,12 +39,12 @@ The backend expects the ten lesson documents from `lessons.json` in `AftaClass.l
 
 ```powershell
 $env:MONGODB_URI = "your_mongodb_atlas_connection_string"
-mongoimport --uri $env:MONGODB_URI --db AftaClass --collection lessons --file lessons.json --jsonArray
+mongoimport --uri $env:MONGODB_URI --db AftaClass --collection lessons --file backend/lessons.json --jsonArray
 ```
 
 ## Render deployment
 
-Deploy this repository as a Render **Web Service**. Leave **Root Directory** blank so Render uses the repository root. Set the build command to `npm ci`, the start command to `npm start`, and `MONGODB_URI` in the Render environment settings. Render supplies `PORT`.
+Deploy this repository as a Render **Web Service**. In Render settings, set **Root Directory** to `backend`. Set the build command to `npm ci`, the start command to `npm start`, and add `MONGODB_URI` in the Render environment settings. Render supplies `PORT`.
 
 ## API
 
