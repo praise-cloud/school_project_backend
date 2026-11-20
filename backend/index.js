@@ -39,8 +39,8 @@ let lessonsCollection
 async function connectDB() {
   try {
     await client.connect()
-    lessonsCollection = client.db('AftaClass').collection('lessons')
-    console.log('Connected to MongoDB Atlas')
+    lessonsCollection = client.db('aftaclass_DB').collection('lessons')
+    console.log('Connected to MongoDB Atlas (aftaclass_DB.lessons)')
   } catch (err) {
     console.error('Failed to connect to MongoDB Atlas, retrying in 5 seconds:', err.message)
     setTimeout(connectDB, 5000)

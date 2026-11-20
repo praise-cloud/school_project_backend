@@ -10,7 +10,7 @@ The Vue frontend is maintained separately at [praise-cloud/school_project_fronte
 Vue frontend (GitHub Pages) ── fetch / REST API ──> Express (Render) ── MongoDB driver ──> MongoDB Atlas
 ```
 
-The `AftaClass.lessons` collection stores the lessons and their remaining seats. The ten initial lesson records are in [`lessons.json`](lessons.json). Cart contents are kept in server memory, so a backend restart clears active carts. Checkout subtracts requested quantities from lesson availability; this version does not save orders as documents.
+The `aftaclass_DB.lessons` collection stores the lessons and their remaining seats. The ten initial lesson records are in [`lessons.json`](lessons.json). Cart contents are kept in server memory, so a backend restart clears active carts. Checkout subtracts requested quantities from lesson availability; this version does not save orders as documents.
 
 ## Run locally
 
@@ -35,11 +35,11 @@ Never commit `.env` or share its connection string.
 
 ## MongoDB lesson data
 
-The backend expects the ten lesson documents from `lessons.json` in `AftaClass.lessons`. Replace the existing lesson records before importing so the records are not duplicated. `mongoimport` does not read `.env` automatically; in PowerShell, set the variable for the command:
+The backend expects the ten lesson documents from `lessons.json` in `aftaclass_DB.lessons`. Replace the existing lesson records before importing so the records are not duplicated. `mongoimport` does not read `.env` automatically; in PowerShell, set the variable for the command:
 
 ```powershell
 $env:MONGODB_URI = "your_mongodb_atlas_connection_string"
-mongoimport --uri $env:MONGODB_URI --db AftaClass --collection lessons --file backend/lessons.json --jsonArray
+mongoimport --uri $env:MONGODB_URI --db aftaclass_DB --collection lessons --file backend/lessons.json --jsonArray
 ```
 
 ## Render deployment
