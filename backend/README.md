@@ -50,17 +50,20 @@ Deploy this repository as a Render **Web Service**. In Render settings, set **Ro
 
 | Method | Route | Purpose |
 | --- | --- | --- |
-| `GET` | `/api/lessons` | Return all lessons and current seat counts. |
-| `GET` | `/api/lessons/:id` | Return a single lesson by ID. |
-| `POST` | `/api/lessons` | Create and add a new lesson document. |
-| `PUT` | `/api/lessons/:id` | Update an existing lesson (price, availableSeats, title, etc.). |
-| `DELETE` | `/api/lessons/:id` | Delete a lesson by ID. |
+| `GET` | `/lessons` or `/api/lessons` | Return all lessons and current seat counts (supports `?search=...`). |
+| `GET` | `/lessons/:id` or `/api/lessons/:id` | Return a single lesson by ID. |
+| `POST` | `/lessons` or `/api/lessons` | Create and add a new lesson document. |
+| `PUT` | `/lessons/:id` or `/api/lessons/:id` | Update an existing lesson (price, availableSeats, title, etc.). |
+| `DELETE` | `/lessons/:id` or `/api/lessons/:id` | Delete a lesson by ID. |
+| `GET` | `/search?q=...` or `/api/search?q=...` | **[Challenge]** Multi-attribute search across title, subject, location, etc. |
+| `GET` | `/enrolment/:lessonid` | **[Challenge]** Return total booked enrolment count for a lesson. |
+| `GET` | `/images/:filename` | **[Middleware]** Return lesson image or 404 error if file does not exist. |
+| `GET` | `/orders` or `/api/orders` | Return all orders stored in the `orders` collection. |
+| `POST` | `/orders` or `/api/orders` | Save an order directly to the `orders` collection. |
 | `GET` | `/api/cart/:cartId` | Return the cart items and lesson quantities. |
 | `POST` | `/api/cart/:cartId/items` | Add one seat to cart using `{ "lessonId": 1 }`. |
 | `DELETE` | `/api/cart/:cartId/items/:lessonId` | Remove one seat for that lesson from cart. |
-| `POST` | `/api/checkout/:cartId` | Book cart quantities and save order to `orders` collection using `{ "name": "Alex", "phone": "0712345678", "email": "alex@example.com" }`. |
-| `GET` | `/api/orders` | Return all orders stored in the `orders` collection. |
-| `POST` | `/api/orders` | Save an order directly to the `orders` collection. |
+| `POST` | `/api/checkout/:cartId` | Book cart quantities and save order to `orders` collection. |
 
 ## AI-use acknowledgment
 
