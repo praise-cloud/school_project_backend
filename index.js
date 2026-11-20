@@ -35,6 +35,19 @@ const carts = {}
 const client = new MongoClient(process.env.MONGODB_URI)
 let lessonsCollection
 
+// Connect to MongoDB Atlas with auto-retry
+async function connectDB() {
+  try {
+    await client.connect()
+    lessonsCollection = client.db('AftaClass').collection('lessons')
+    console.log('Connected to MongoDB Atlas')
+  } catch (err) {
+    console.error('Failed to connect to MongoDB Atlas, retrying in 5 seconds:', err.message)
+    setTimeout(connectDB, 5000)
+  }
+}
+connectDB()
+
 // Helper to get cart items with their full lesson details
 async function getCartItems(cartId) {
   const cart = carts[cartId] || {}
@@ -47,7 +60,7 @@ async function getCartItems(cartId) {
 // 1. Get all lessons
 app.get('/api/lessons', async (req, res) => {
   if (!lessonsCollection) {
-    return res.status(503).json({ error: 'Database is not connected.' })
+    return res.status(503).json({ error: 'Database is connecting, please refresh in a moment.' })
   }
   try {
     const lessons = await lessonsCollection.find({}).sort({ id: 1 }).toArray()
@@ -60,7 +73,7 @@ app.get('/api/lessons', async (req, res) => {
 // 2. Get items in a cart
 app.get('/api/cart/:cartId', async (req, res) => {
   if (!lessonsCollection) {
-    return res.status(503).json({ error: 'Database is not connected.' })
+    return res.status(503).json({ error: 'Database is connecting, please refresh in a moment.' })
   }
   try {
     const items = await getCartItems(req.params.cartId)
@@ -73,7 +86,7 @@ app.get('/api/cart/:cartId', async (req, res) => {
 // 3. Add a lesson seat to a cart
 app.post('/api/cart/:cartId/items', async (req, res) => {
   if (!lessonsCollection) {
-    return res.status(503).json({ error: 'Database is not connected.' })
+    return res.status(503).json({ error: 'Database is connecting, please refresh in a moment.' })
   }
   try {
     const cartId = req.params.cartId
@@ -105,7 +118,7 @@ app.post('/api/cart/:cartId/items', async (req, res) => {
 // 4. Remove a lesson seat from a cart
 app.delete('/api/cart/:cartId/items/:lessonId', async (req, res) => {
   if (!lessonsCollection) {
-    return res.status(503).json({ error: 'Database is not connected.' })
+    return res.status(503).json({ error: 'Database is connecting, please refresh in a moment.' })
   }
   try {
     const cartId = req.params.cartId
@@ -128,7 +141,7 @@ app.delete('/api/cart/:cartId/items/:lessonId', async (req, res) => {
 // 5. Checkout cart
 app.post('/api/checkout/:cartId', async (req, res) => {
   if (!lessonsCollection) {
-    return res.status(503).json({ error: 'Database is not connected.' })
+    return res.status(503).json({ error: 'Database is connecting, please refresh in a moment.' })
   }
   try {
     const cartId = req.params.cartId
@@ -184,17 +197,7 @@ app.post('/api/checkout/:cartId', async (req, res) => {
   }
 })
 
-// Connect to MongoDB Atlas
-client.connect()
-  .then(() => {
-    lessonsCollection = client.db('AftaClass').collection('lessons')
-    console.log('Connected to MongoDB Atlas')
-  })
-  .catch((err) => {
-    console.error('Failed to connect to MongoDB Atlas:', err)
-  })
-
-// Start server listening immediately so Render stays active
+// Start server listening immediately
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`)
 })
