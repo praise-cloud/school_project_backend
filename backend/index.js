@@ -47,6 +47,7 @@ const carts = {}
 // MongoDB connection
 const client = new MongoClient(process.env.MONGODB_URI)
 let lessonsCollection
+let orderCollection
 let ordersCollection
 
 // Connect to MongoDB Atlas with auto-retry
@@ -55,8 +56,9 @@ async function connectDB() {
     await client.connect()
     const db = client.db('aftaclass_DB')
     lessonsCollection = db.collection('lessons')
+    orderCollection = db.collection('order')
     ordersCollection = db.collection('orders')
-    console.log('Connected to MongoDB Atlas (aftaclass_DB: lessons, orders)')
+    console.log('Connected to MongoDB Atlas (aftaclass_DB: lessons, order, orders)')
   } catch (err) {
     console.error('Failed to connect to MongoDB Atlas, retrying in 5 seconds:', err.message)
     setTimeout(connectDB, 5000)
@@ -268,7 +270,7 @@ app.get('/api/search', handleSearch)
 
 // Challenge 2: GET /enrolment/:lessonid (Returns purchased slots count)
 async function handleEnrolment(req, res) {
-  if (!ordersCollection || !lessonsCollection) {
+  if (!orderCollection && !ordersCollection) {
     return res.status(503).json({ error: 'Database is connecting, please refresh in a moment.' })
   }
   try {
@@ -279,7 +281,8 @@ async function handleEnrolment(req, res) {
     }
 
     // Find all orders that bought spaces for this lesson
-    const orders = await ordersCollection.find({ 'lessons.id': lessonId }).toArray()
+    const col = orderCollection || ordersCollection
+    const orders = await col.find({ 'lessons.id': lessonId }).toArray()
     let enrolment = 0
     for (const order of orders) {
       if (Array.isArray(order.lessons)) {
@@ -308,24 +311,27 @@ app.get('/api/enrolment/:lessonid', handleEnrolment)
 // ORDERS ROUTES: POST & GET
 // -------------------------------------------------------------
 
-// GET all orders from the 'orders' collection
+// GET all orders from the 'order' and 'orders' collection
 async function handleGetOrders(req, res) {
-  if (!ordersCollection) {
+  const col = orderCollection || ordersCollection
+  if (!col) {
     return res.status(503).json({ error: 'Database is connecting, please refresh in a moment.' })
   }
   try {
-    const orders = await ordersCollection.find({}).sort({ createdAt: -1 }).toArray()
+    const orders = await col.find({}).sort({ createdAt: -1 }).toArray()
     res.json(orders)
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
 }
+app.get('/order', handleGetOrders)
 app.get('/orders', handleGetOrders)
+app.get('/api/order', handleGetOrders)
 app.get('/api/orders', handleGetOrders)
 
-// POST save a new order to the 'orders' collection
+// POST save a new order to the 'order' and 'orders' collection
 async function handleCreateOrder(req, res) {
-  if (!ordersCollection) {
+  if (!orderCollection && !ordersCollection) {
     return res.status(503).json({ error: 'Database is connecting, please refresh in a moment.' })
   }
   try {
@@ -358,17 +364,27 @@ async function handleCreateOrder(req, res) {
       createdAt: new Date()
     }
 
-    const result = await ordersCollection.insertOne(orderDoc)
+    // Insert into both 'order' and 'orders' collections
+    let result = null
+    if (orderCollection) {
+      result = await orderCollection.insertOne({ ...orderDoc })
+    }
+    if (ordersCollection) {
+      await ordersCollection.insertOne({ ...orderDoc })
+    }
+
     res.status(201).json({
       message: 'Order placed successfully.',
-      orderId: result.insertedId,
+      orderId: result ? result.insertedId : undefined,
       order: orderDoc
     })
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
 }
+app.post('/order', handleCreateOrder)
 app.post('/orders', handleCreateOrder)
+app.post('/api/order', handleCreateOrder)
 app.post('/api/orders', handleCreateOrder)
 
 // -------------------------------------------------------------
@@ -514,13 +530,20 @@ app.post('/api/checkout/:cartId', async (req, res) => {
       createdAt: new Date()
     }
 
-    const orderResult = await ordersCollection.insertOne(orderDoc)
+    // Save to both 'order' and 'orders' collections
+    let orderResult = null
+    if (orderCollection) {
+      orderResult = await orderCollection.insertOne({ ...orderDoc })
+    }
+    if (ordersCollection) {
+      await ordersCollection.insertOne({ ...orderDoc })
+    }
     delete carts[cartId]
 
     res.json({
       message: 'Your lessons have been booked successfully.',
       userName,
-      orderId: orderResult.insertedId,
+      orderId: orderResult ? orderResult.insertedId : undefined,
       order: orderDoc,
       lessons: bookedLessons
     })
